@@ -1,0 +1,6 @@
+{% extends "base.html" %}{% block content %}<span class="eyebrow">UC003</span><h1>Configurar zonas de interés</h1><div class="grid"><section class="card">
+<h2>Editor visual</h2><p class="muted">Haga clic sobre el lienzo para crear el polígono. Mínimo 3 puntos.</p><canvas id="zoneCanvas" width="800" height="450"></canvas>
+<form method="post" id="zf"><label>Tienda</label><select name="id_tienda">{% for s in stores %}<option value="{{s.id_tienda}}">{{s.nombre}}</option>{% endfor %}</select>
+<label>Nombre</label><input name="nombre" required><input type="hidden" name="coordenadas_json" id="coords"><div class="actions"><button type="button" class="secondary" onclick="resetPoly()">Limpiar</button><button onclick="return savePoly()">Guardar zona</button></div></form></section>
+<section class="card"><h2>Zonas existentes</h2>{% for z in zones %}<div class="row"><div><b>{{z.nombre}}</b><small>{{'Activa' if z.estado else 'Inactiva'}}</small></div><div class="inline"><form method="post" action="/zones/{{z.id_zona}}/toggle"><button class="ghost">{{'Desactivar' if z.estado else 'Activar'}}</button></form><form method="post" action="/zones/{{z.id_zona}}/delete"><button class="danger">Eliminar</button></form></div></div>{% else %}<p class="muted">Sin zonas.</p>{% endfor %}</section></div>
+<script src="/static/js/zones.js"></script>{% endblock %}

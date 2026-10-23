@@ -1,0 +1,8 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{title or 'SmartRetail Vision'}}</title><link rel="stylesheet" href="/static/css/app.css"></head><body>
+{% if user %}<aside id="side"><div class="brand">◉ <span>SmartRetail</span></div><nav>
+<a href="/dashboard">▦ Dashboard</a>{% if user.rol=='ADMIN' %}<a href="/videos">◉ Fuentes de video</a><a href="/zones">⌖ Zonas</a>{% endif %}
+<a href="/vision">◎ YOLO Live</a><a href="/heatmap">♨ Mapa de calor</a><a href="/reports">▤ Reportes</a>
+{% if user.rol=='ADMIN' %}<a href="/users">♙ Usuarios</a>{% endif %}<a href="/logout">↪ Salir</a></nav></aside>
+<header class="mobile"><button onclick="side.classList.toggle('open')">☰</button><b>SmartRetail Vision</b></header>{% endif %}
+<main class="{% if user %}shell{% endif %}">{% block content %}{% endblock %}</main></body></html>

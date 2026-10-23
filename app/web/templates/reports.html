@@ -1,0 +1,58 @@
+{% extends "base.html" %}{% block content %}
+<div class="head">
+  <div><span class="eyebrow">UC007 · BUSINESS INTELLIGENCE</span><h1>Centro de reportes</h1>
+  <p class="muted">Analítica consolidada de flujo, permanencia, ocupación, tracking y calidad de detección.</p></div>
+  <form class="report-filter"><label>Tienda</label><select name="store_id" onchange="this.form.submit()">
+  {% for s in stores %}<option value="{{s.id_tienda}}" {% if s.id_tienda==store_id %}selected{% endif %}>{{s.nombre}}</option>{% endfor %}</select></form>
+</div>
+
+<div class="report-actions">
+  <a class="btn" href="/reports/download?store_id={{store_id or ''}}">↓ Exportar reporte CSV</a>
+  <a class="btn" href="/reports/download.xlsx?store_id={{store_id or ''}}">↓ Exportar reporte Excel</a>
+  <button class="secondary" onclick="window.print()">⎙ Imprimir / PDF</button>
+</div>
+
+<section class="report-hero card">
+  <div><span class="eyebrow">RESUMEN EJECUTIVO</span><h2>Comportamiento de clientes</h2>
+  <p>Lectura gerencial de los eventos espaciales generados por YOLO + tracking anónimo.</p></div>
+  <div class="report-score"><span>Confianza YOLO promedio</span><strong>{{data.advanced.confidence_avg}}%</strong><small>No equivale a mAP; es confianza media de detecciones almacenadas.</small></div>
+</section>
+
+<div class="kpis report-kpis">
+  <div class="card kpi"><span>Flujo total</span><strong>{{data.flujo}}</strong><small>eventos de zona</small></div>
+  <div class="card kpi"><span>Permanencia media</span><strong>{{data.permanencia}}</strong><small>segundos</small></div>
+  <div class="card kpi"><span>Ocupación actual</span><strong>{{data.ocupacion}}</strong><small>presencias abiertas</small></div>
+  <div class="card kpi"><span>Visitas completadas</span><strong>{{data.advanced.completed_visits}}</strong><small>con salida registrada</small></div>
+  <div class="card kpi"><span>Detecciones</span><strong>{{data.detecciones}}</strong><small>observaciones YOLO</small></div>
+  <div class="card kpi"><span>Tracks</span><strong>{{data.tracks}}</strong><small>IDs temporales</small></div>
+</div>
+
+<div class="grid report-grid">
+<section class="card"><div class="section-title"><div><span class="eyebrow">FLUJO POR ZONA</span><h2>¿Dónde se concentra el tránsito?</h2></div><b>{{data.advanced.top_flow}}</b></div>
+<div class="bar-chart">{% set mx = (data.zonas|max(attribute='flujo')).flujo if data.zonas else 1 %}
+{% for z in data.zonas %}<div class="bar-row"><span>{{z.zona}}</span><div class="bar-track"><i style="width:{{(z.flujo/(mx if mx else 1)*100)|round}}%"></i></div><b>{{z.flujo}}</b></div>
+{% else %}<div class="empty">Aún no hay eventos. Ejecute YOLO Live con zonas activas.</div>{% endfor %}</div></section>
+
+<section class="card"><div class="section-title"><div><span class="eyebrow">PERMANENCIA</span><h2>¿Dónde permanecen más?</h2></div><b>{{data.advanced.top_dwell}}</b></div>
+<div class="bar-chart dwell">{% set md = (data.zonas|max(attribute='permanencia')).permanencia if data.zonas else 1 %}
+{% for z in data.zonas %}<div class="bar-row"><span>{{z.zona}}</span><div class="bar-track"><i style="width:{{(z.permanencia/(md if md else 1)*100)|round}}%"></i></div><b>{{z.permanencia}}s</b></div>
+{% else %}<div class="empty">Sin permanencias completadas.</div>{% endfor %}</div></section>
+</div>
+
+<div class="grid report-grid">
+<section class="card"><span class="eyebrow">MATRIZ OPERATIVA</span><h2>Detalle por zona</h2>
+<div class="table-scroll"><table><thead><tr><th>Zona</th><th>Flujo</th><th>Permanencia</th><th>Ocupación</th><th>Lectura</th></tr></thead><tbody>
+{% for z in data.zonas %}<tr><td><b>{{z.zona}}</b></td><td>{{z.flujo}}</td><td>{{z.permanencia}} s</td><td>{{z.ocupacion}}</td>
+<td>{% if z.flujo==data.advanced.top_flow_value and z.flujo>0 %}<span class="tag">Mayor flujo</span>{% elif z.permanencia==data.advanced.top_dwell_value and z.permanencia>0 %}<span class="tag alt">Mayor permanencia</span>{% else %}<span class="muted">Seguimiento</span>{% endif %}</td></tr>
+{% else %}<tr><td colspan="5">Sin datos procesados.</td></tr>{% endfor %}</tbody></table></div></section>
+
+<section class="card"><span class="eyebrow">INSIGHTS AUTOMÁTICOS</span><h2>Lectura rápida</h2>
+<div class="insight"><b>Zona de mayor flujo</b><strong>{{data.advanced.top_flow}}</strong><p>{{data.advanced.top_flow_value}} eventos registrados.</p></div>
+<div class="insight"><b>Zona de mayor permanencia</b><strong>{{data.advanced.top_dwell}}</strong><p>{{data.advanced.top_dwell_value}} segundos promedio.</p></div>
+<div class="insight"><b>Permanencia máxima</b><strong>{{data.advanced.dwell_max}} s</strong><p>Máximo evento completado registrado.</p></div>
+</section></div>
+
+<section class="card history"><div class="section-title"><div><span class="eyebrow">TRAZABILIDAD</span><h2>Historial de reportes</h2></div><span>{{reports|length}} recientes</span></div>
+{% for r in reports %}<div class="report-history-row"><div class="report-icon">▤</div><div><b>Reporte #{{r.id_reporte}}</b><small>{{r.tipo}} · {{r.fecha_generacion}}</small></div><span class="tag">Generado</span></div>
+{% else %}<div class="empty">El historial se poblará al exportar reportes.</div>{% endfor %}</section>
+{% endblock %}

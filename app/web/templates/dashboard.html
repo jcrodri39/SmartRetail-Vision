@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% block content %}<div class="head"><div><span class="eyebrow">UC005 · ANALÍTICA</span><h1>Dashboard</h1><p class="muted">KPIs agregados por tienda y zonas.</p></div>
+<form><select name="store_id" onchange="this.form.submit()">{% for s in stores %}<option value="{{s.id_tienda}}" {% if s.id_tienda==store_id %}selected{% endif %}>{{s.nombre}}</option>{% endfor %}</select></form></div>
+<div class="kpis">{% for a,b,c in [('Flujo',data.flujo,'eventos'),('Permanencia',data.permanencia,'seg'),('Ocupación',data.ocupacion,'ahora'),('Tracks',data.tracks,'IDs'),('Detecciones',data.detecciones,'YOLO')] %}
+<div class="card kpi"><span>{{a}}</span><strong>{{b}}</strong><small>{{c}}</small></div>{% endfor %}</div>
+<div class="grid"><section class="card"><h2>Métricas por zona</h2><table><thead><tr><th>Zona</th><th>Flujo</th><th>Permanencia</th><th>Ocupación</th></tr></thead><tbody>
+{% for z in data.zonas %}<tr><td>{{z.zona}}</td><td>{{z.flujo}}</td><td>{{z.permanencia}} s</td><td>{{z.ocupacion}}</td></tr>{% else %}<tr><td colspan="4">Sin datos todavía. Configure video y zonas, luego ejecute YOLO Live.</td></tr>{% endfor %}</tbody></table></section>
+<section class="card callout"><h2>Visión en tiempo real</h2><p>Vea bounding boxes, confidence, IDs temporales, zonas y telemetría.</p><a class="btn" href="/vision">Abrir YOLO Live →</a></section></div>{% endblock %}

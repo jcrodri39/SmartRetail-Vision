@@ -1,0 +1,6 @@
+{% extends "base.html" %}{% block content %}<div class="login-shell"><section class="login-hero"><span class="eyebrow">SMARTRETAIL VISION</span>
+<h1>Convierte video en decisiones.</h1><p>YOLO + tracking anónimo + zonas + métricas espaciales para retail.</p>
+<div class="pill">✓ Sin reconocimiento facial</div></section><section class="card login-card"><h2>Iniciar sesión</h2><p class="muted">Acceso para Administrador y Analista.</p>
+{% if error %}<div class="error">{{error}}</div>{% endif %}<form method="post"><label>Correo</label><input name="email" type="email" value="admin@smartretail.local" required>
+<label>Contraseña</label><input name="password" type="password" value="Admin123*" required><button>Ingresar</button></form>
+<small>Demo Admin: admin@smartretail.local / Admin123*</small></section></div>{% endblock %}

@@ -1,0 +1,3 @@
+async function startVision(){let id=camera.value;if(!id){alert('Configure una fuente primero');return}await fetch('/vision/start/'+id,{method:'POST'})}
+async function stopVision(){await fetch('/vision/stop',{method:'POST'})}
+async function poll(){try{let r=await fetch('/vision/status'),m=await r.json();state.textContent=m.running?'● PROCESANDO':'DETENIDO';for(const k of ['persons','fps','latency','tracks','frames','entries','exits'])document.getElementById(k).textContent=m[k]??0;events.innerHTML=m.events.length?m.events.map(e=>'<div>'+e+'</div>').join(''):'Sin eventos.'}catch(e){}setTimeout(poll,700)}poll();

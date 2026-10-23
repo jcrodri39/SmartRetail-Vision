@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% block content %}<span class="eyebrow">UC004 · YOLO + TRACKING</span><h1>YOLO Live Monitor</h1>
+<div class="toolbar"><select id="camera">{% for c in cameras %}<option value="{{c.id_camara}}">{{c.nombre}}</option>{% endfor %}</select><button onclick="startVision()">▶ Iniciar</button><button class="danger" onclick="stopVision()">■ Detener</button></div>
+<div class="vision-grid"><section class="video card"><div class="livebadge" id="state">DETENIDO</div><img src="/vision/stream" alt="YOLO Live"></section>
+<section class="telemetry">{% for id,label in [('persons','Personas'),('fps','FPS'),('latency','Latencia ms'),('tracks','Tracks'),('frames','Frames'),('entries','Entradas'),('exits','Salidas')] %}<div class="card kpi"><span>{{label}}</span><strong id="{{id}}">0</strong></div>{% endfor %}</section></div>
+<section class="card"><h2>Eventos en vivo</h2><div id="events" class="events">Sin eventos.</div></section><script src="/static/js/vision.js"></script>{% endblock %}
