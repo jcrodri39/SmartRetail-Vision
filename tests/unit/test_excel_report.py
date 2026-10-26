@@ -61,3 +61,9 @@ def test_reporte_sin_datos_no_falla():
     ws = _libro(vacio, [])["Resumen"]
     valores = [ws.cell(row=r, column=2).value for r in range(1, 30)]
     assert "Sin datos" in valores
+
+def test_todas_las_hojas_tienen_pie_de_pagina():
+    libro = _libro()
+
+    for hoja in libro.worksheets:
+        assert hoja.oddFooter.center.text == "SmartRetail Vision"
