@@ -3,12 +3,12 @@
   <div><span class="eyebrow">UC007 · BUSINESS INTELLIGENCE</span><h1>Centro de reportes</h1>
   <p class="muted">Analítica consolidada de flujo, permanencia, ocupación, tracking y calidad de detección.</p></div>
   <form class="report-filter"><label>Tienda</label><select name="store_id" onchange="this.form.submit()">
-  {% for s in stores %}<option value="{{s.id_tienda}}" {% if s.id_tienda==store_id %}selected{% endif %}>{{s.nombre}}</option>{% endfor %}</select></form>
+  {% for s in stores %}<option value="{{s.id_tienda}}" {% if s.id_tienda==store_id %}selected{% endif %}>{{s.nombre}}</option>{% endfor %}</select><label for="processing_id">Sesión</label><select id="processing_id" name="processing_id"><option value="">Todas las sesiones (histórico)</option>{% for sess in sessions %}<option value="{{sess.id_procesamiento}}" {% if sess.id_procesamiento==processing_id %}selected{% endif %}>Sesión #{{sess.id_procesamiento}} · {{sess.estado}}</option>{% endfor %}</select><button type="submit">Aplicar filtros</button></form>
 </div>
 
 <div class="report-actions">
-  <a class="btn" href="/reports/download?store_id={{store_id or ''}}">↓ Exportar reporte CSV</a>
-  <a class="btn" href="/reports/download.xlsx?store_id={{store_id or ''}}">↓ Exportar reporte Excel</a>
+  <a class="btn" href="/reports/download?store_id={{store_id or ''}}{% if processing_id is not none %}&amp;processing_id={{processing_id}}{% endif %}">↓ Exportar reporte CSV</a>
+  <a class="btn" href="/reports/download.xlsx?store_id={{store_id or ''}}{% if processing_id is not none %}&amp;processing_id={{processing_id}}{% endif %}">↓ Exportar reporte Excel</a>
   <button class="secondary" onclick="window.print()">⎙ Imprimir / PDF</button>
 </div>
 

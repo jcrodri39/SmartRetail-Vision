@@ -1,6 +1,29 @@
 from datetime import datetime,timedelta,timezone
 import jwt
-from pwdlib import PasswordHash
+try:
+    from pwdlib import PasswordHash
+except ImportError:
+    # argon2-cffi is the underlying Argon2id implementation.
+    # Keep the same PHC password-hash format for existing accounts.
+    from argon2 import PasswordHasher
+    from argon2.exceptions import VerifyMismatchError, VerificationError, InvalidHashError
+
+    class PasswordHash:
+        @staticmethod
+        def recommended():
+            hasher = PasswordHasher()
+
+            class Argon2Adapter:
+                def hash(self, password):
+                    return hasher.hash(password)
+
+                def verify(self, password, stored_hash):
+                    try:
+                        return hasher.verify(stored_hash, password)
+                    except (VerifyMismatchError, VerificationError, InvalidHashError):
+                        return False
+
+            return Argon2Adapter()
 from app.core.config import settings
 ph=PasswordHash.recommended()
 def hash_password(v):return ph.hash(v)

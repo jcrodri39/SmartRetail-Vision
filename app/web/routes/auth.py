@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from app.db.database import get_db
 from app.models.entities import Usuario
 from app.core.security import verify_password,token
+from app.core.config import settings
 router=APIRouter()
 log=logging.getLogger("smartretail.auth")
 @router.get("/login")
@@ -16,7 +17,7 @@ def login(request:Request,email:str=Form(...),password:str=Form(...),db:Session=
         log.warning("Inicio de sesión rechazado para %s (%s)",email,"usuario inactivo" if u and not u.estado else "credenciales inválidas")
         return request.app.state.templates.TemplateResponse(request,"login.html",{"error":"Correo o contraseña incorrectos."},status_code=401)
     log.info("Inicio de sesión correcto: %s (rol %s)",email,u.rol)
-    r=RedirectResponse("/dashboard",303);r.set_cookie("sv_session",token(u.id_usuario,u.rol),httponly=True,samesite="lax",max_age=28800);return r
+    r=RedirectResponse("/dashboard",303);r.set_cookie("sv_session",token(u.id_usuario,u.rol),httponly=True,samesite="lax",secure=settings.session_cookie_secure,max_age=28800);return r
 @router.get("/logout")
 def logout():
     r=RedirectResponse("/login",303);r.delete_cookie("sv_session");return r

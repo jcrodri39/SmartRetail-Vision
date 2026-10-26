@@ -2,6 +2,9 @@ from pydantic_settings import BaseSettings,SettingsConfigDict
 class Settings(BaseSettings):
     app_name:str="SmartRetail Vision"
     secret_key:str="development-change-me"
+    bootstrap_admin_email:str=""
+    bootstrap_admin_password:str=""
+    session_cookie_secure:bool=False
     database_url:str="sqlite:///./smartretail.db"
     yolo_model:str="yolo11n.pt"; yolo_confidence:float=.35; yolo_iou:float=.70
     yolo_device:str="auto"; yolo_image_size:int=640; yolo_tracker:str="bytetrack.yaml"

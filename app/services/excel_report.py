@@ -294,22 +294,24 @@ def build_workbook(data: dict, eventos: list[dict], meta: dict, truncado: bool =
     return salida.getvalue()
 
 
-def make_xlsx(db, user, store_id=None):
+def make_xlsx(db, user, store_id=None, processing_id=None):
     """Equivalente de make_csv() para Excel: consulta, arma el libro y registra el Reporte."""
     from app.core.config import settings
     from app.models.entities import EventoZona, Reporte, Tienda, Track, Zona
     from app.services.reports import report_data
 
-    data = report_data(db, store_id)
+    data = report_data(db, store_id, processing_id)
     zone_ids = [z["id"] for z in data["zonas"]]
     eventos: list[dict] = []
     if zone_ids:
-        filas = (db.query(EventoZona, Zona.nombre, Track.external_track_id)
+        query = (db.query(EventoZona, Zona.nombre, Track.external_track_id)
                  .join(Zona, Zona.id_zona == EventoZona.id_zona)
                  .join(Track, Track.id_track == EventoZona.id_track)
                  .filter(EventoZona.id_zona.in_(zone_ids))
-                 .order_by(EventoZona.entrada.desc())
-                 .limit(MAX_EVENTOS + 1).all())
+                 .order_by(EventoZona.entrada.desc()))
+        if processing_id is not None:
+            query = query.filter(Track.id_procesamiento == processing_id)
+        filas = query.limit(MAX_EVENTOS + 1).all()
         eventos = [{"id_evento": ev.id_evento, "track": tid, "zona": nombre, "entrada": ev.entrada,
                     "salida": ev.salida, "permanencia_seg": ev.permanencia_seg} for ev, nombre, tid in filas]
     truncado = len(eventos) > MAX_EVENTOS
@@ -317,10 +319,10 @@ def make_xlsx(db, user, store_id=None):
 
     tienda = db.get(Tienda, store_id) if store_id else None
     rep = Reporte(id_usuario=user.id_usuario, tipo="XLSX_ANALYTICS",
-                  parametros=json.dumps({"store_id": store_id, "eventos": len(eventos), "truncado": truncado}))
+                  parametros=json.dumps({"store_id": store_id, "processing_id": processing_id, "eventos": len(eventos), "truncado": truncado}))
     db.add(rep)
     db.flush()  # obtiene id_reporte para imprimirlo en el libro
-    meta = {"tienda": tienda.nombre if tienda else "Todas las tiendas", "store_id": store_id,
+    meta = {"tienda": tienda.nombre if tienda else "Todas las tiendas", "store_id": store_id, "processing_id": processing_id,
             "generado_por": user.nombre, "generado": datetime.now(), "id_reporte": rep.id_reporte,
             "modelo": settings.yolo_model, "tracker": settings.yolo_tracker,
             "conf": settings.yolo_confidence, "iou": settings.yolo_iou, "eventos_exportados": len(eventos)}
