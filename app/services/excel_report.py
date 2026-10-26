@@ -284,6 +284,7 @@ def build_workbook(data: dict, eventos: list[dict], meta: dict, truncado: bool =
     _hoja_trazabilidad(wb, meta)
     _hoja_resumen(resumen, data, meta, zr, hr, fin_ev, truncado)
     for ws in wb.worksheets:  # impresión: horizontal y ajustada al ancho (PrintSetup en POI)
+        ws.oddFooter.center.text = "SmartRetail Vision"
         ws.page_setup.orientation = "landscape"
         ws.page_setup.fitToWidth, ws.page_setup.fitToHeight = 1, 0
         ws.sheet_properties.pageSetUpPr.fitToPage = True
