@@ -36,6 +36,7 @@ log = logging.getLogger("smartretail.reportes")
 
 MAX_EVENTOS = 50_000  # Excel admite ~1 millón de filas; se limita para mantener el archivo liviano
 MIME_XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+PIE_PAGINA = "SmartRetail Vision"
 
 # Estilos reutilizables (equivalente a crear un CellStyle por tipo de celda en POI).
 # Colores tomados del tema del prototipo (app/web/static/css/app.css).
@@ -284,7 +285,7 @@ def build_workbook(data: dict, eventos: list[dict], meta: dict, truncado: bool =
     _hoja_trazabilidad(wb, meta)
     _hoja_resumen(resumen, data, meta, zr, hr, fin_ev, truncado)
     for ws in wb.worksheets:  # impresión: horizontal y ajustada al ancho (PrintSetup en POI)
-        ws.oddFooter.center.text = "SmartRetail Vision"
+        ws.oddFooter.center.text = PIE_PAGINA
         ws.page_setup.orientation = "landscape"
         ws.page_setup.fitToWidth, ws.page_setup.fitToHeight = 1, 0
         ws.sheet_properties.pageSetUpPr.fitToPage = True
